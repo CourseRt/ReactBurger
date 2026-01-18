@@ -1,0 +1,46 @@
+.constructor {
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+}
+
+.elementsContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.scrollArea {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 450px; 
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 8px; 
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.total {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.scrollArea::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollArea::-webkit-scrollbar-thumb {
+  background-color: #2f2f37;
+}
