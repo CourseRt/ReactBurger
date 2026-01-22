@@ -10,14 +10,26 @@
 
 .scrollArea {
   overflow-y: auto;
+  height: calc(100vh - 250px);
   max-height: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: #2f2f37 transparent;
 }
 
 .scrollArea::-webkit-scrollbar {
-  width: 8px;
+  width: 8px !important;
+  display: block !important;
 }
+
 .scrollArea::-webkit-scrollbar-thumb {
-  background-color: #2f2f37;
+  background-color: #8585ad !important;
+  border-radius: 20px !important;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.scrollArea::-webkit-scrollbar-track {
+  background: transparent !important;
 }
 
 .grid {
