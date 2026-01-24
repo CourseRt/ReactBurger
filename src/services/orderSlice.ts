@@ -1,15 +1,20 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { BASE_URL, checkResponse } from '../utils/constants';
 
 export const postOrder = createAsyncThunk(
   'order/postOrder',
-  async (ingredientIds: string[]) => {
-    const res = await fetch('https://norma.education-services.ru/api/orders', {
+  (ingredientIds: string[]) => {
+    return fetch(`${BASE_URL}/orders`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ingredients: ingredientIds }),
-    });
-    const data = await res.json();
-    return data.order.number;
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ingredients: ingredientIds,
+      }),
+    })
+      .then(checkResponse)
+      .then((data: any) => data.order.number);
   }
 );
 

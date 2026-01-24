@@ -4,7 +4,7 @@ import styles from './burger-constructor.module.css';
 import { IIngredient } from '../../App';
 import { useDispatch, useSelector } from 'react-redux';
 import { postOrder } from '../../services/orderSlice';
-import { addIngredient, removeIngredient } from '../../services/constructorSlice';
+import { addIngredient, clearConstructor, removeIngredient } from '../../services/constructorSlice';
 import { RootState, AppDispatch } from '../../services/store';
 import { useDrop } from 'react-dnd';
 import { ConstructorIngredient } from './constructor-ingredient';
@@ -30,10 +30,18 @@ const BurgerConstructor: React.FC<IBurgerConstructorProps> = ({ onOrderClick }) 
     }),
   });
 
-  const handleOrderSubmit = () => {
+const handleOrderSubmit = () => {
   if (!bun) return;
   const orderIds = [bun._id, ...ingredients.map(item => item._id), bun._id];
-  dispatch(postOrder(orderIds)); 
+
+  dispatch(postOrder(orderIds))
+    .unwrap()
+    .then(() => {
+      dispatch(clearConstructor()); 
+    })
+    .catch((error) => {
+      console.error("Ошибка при оформлении заказа:", error);
+    });
   onOrderClick();
 };
 

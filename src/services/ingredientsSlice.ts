@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { BASE_URL, checkResponse } from '../utils/constants';
 
 {/*Проверка типизации, чтоб не создавать prop-types в конце файла
    интерфейс будет контролировать данные, приходящие в компонент(9 пункт курсовой)*/}
@@ -19,13 +20,12 @@ export interface TIngredient {
 
 export const fetchIngredients = createAsyncThunk(
   'ingredients/fetchIngredients',
-  async () => {
-    const res = await fetch('https://norma.education-services.ru/api/ingredients');
-    const data = await res.json();
-    return data.data;
+  () => {
+    return fetch(`${BASE_URL}/ingredients`)
+      .then(checkResponse)
+      .then((data: any) => data.data);
   }
 );
-
 const ingredientsSlice = createSlice({
   name: 'ingredients',
   initialState: { 

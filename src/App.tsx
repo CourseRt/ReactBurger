@@ -29,8 +29,6 @@ export interface IIngredient {
   __v: number;
 }
 
-const API_URL = 'https://norma.education-services.ru/api/ingredients';
-
 function App() {
   const { items, isLoading, error } = useSelector((state: RootState) => state.ingredients);
   const { ingredient } = useSelector((state: RootState) => state.ingredientDetails);
