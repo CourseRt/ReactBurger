@@ -2,15 +2,48 @@ import React, { useMemo } from 'react';
 import { ConstructorElement, Button, CurrencyIcon, DragIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './burger-constructor.module.css';
 import { IIngredient } from '../../App';
+import { useDispatch, useSelector } from 'react-redux';
+import { postOrder } from '../../services/orderSlice';
+import { addIngredient, clearConstructor, removeIngredient } from '../../services/constructorSlice';
+import { RootState, AppDispatch } from '../../services/store';
+import { useDrop } from 'react-dnd';
+import { ConstructorIngredient } from './constructor-ingredient';
 
+{/*Проверка типизации, чтоб не создавать prop-types в конце файла
+   интерфейс будет контролировать данные, приходящие в компонент(9 пункт курсовой)*/}
 interface IBurgerConstructorProps {
-  data: IIngredient[];
   onOrderClick: () => void;
 }
 
-const BurgerConstructor: React.FC<IBurgerConstructorProps> = ({ data, onOrderClick }) => {
-  const bun = useMemo(() => data.find((item) => item.type === 'bun'), [data]);
-  const ingredients = useMemo(() => data.filter((item) => item.type !== 'bun'), [data]);
+const BurgerConstructor: React.FC<IBurgerConstructorProps> = ({ onOrderClick }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { bun, ingredients } = useSelector((state: RootState) => state.burgerConstructor);
+
+  const [{ isHover }, dropTarget] = useDrop({
+    accept: 'ingredient',
+    drop(item: any) {
+      console.log('Добавляем в конструктор:', item);
+      dispatch(addIngredient(item));
+    },
+    collect: (monitor) => ({
+      isHover: monitor.isOver(),
+    }),
+  });
+
+const handleOrderSubmit = () => {
+  if (!bun) return;
+  const orderIds = [bun._id, ...ingredients.map(item => item._id), bun._id];
+
+  dispatch(postOrder(orderIds))
+    .unwrap()
+    .then(() => {
+      dispatch(clearConstructor()); 
+    })
+    .catch((error) => {
+      console.error("Ошибка при оформлении заказа:", error);
+    });
+  onOrderClick();
+};
 
   const totalPrice = useMemo(() => {
     const bunPrice = bun ? bun.price * 2 : 0;
@@ -18,10 +51,16 @@ const BurgerConstructor: React.FC<IBurgerConstructorProps> = ({ data, onOrderCli
     return bunPrice + ingredientsPrice;
   }, [bun, ingredients]);
 
+  const borderStyle = isHover ? '2px solid #4C4CFF' : '2px solid transparent';
+
   return (
-    <section className={`${styles.constructor} mt-25`}>
+    <section 
+      ref={(node) => { dropTarget(node); }}
+      className={`${styles.constructor} mt-25`}
+      style={{ border: borderStyle, borderRadius: '40px', transition: '0.3s' }}
+    >
       <div className={styles.elementsContainer}>
-        {bun && (
+        {bun ? (
           <div className="ml-8 mb-4">
             <ConstructorElement
               type="top"
@@ -31,19 +70,24 @@ const BurgerConstructor: React.FC<IBurgerConstructorProps> = ({ data, onOrderCli
               thumbnail={bun.image}
             />
           </div>
+        ) : (
+          <div className="ml-8 mb-4">
+            <p className="text text_type_main-medium">Перетащите сюда булку</p>
+          </div>
         )}
 
         <ul className={`${styles.scrollArea} custom-scroll`}>
-          {ingredients.map((item) => (
-            <li key={item._id} className={`${styles.listItem} mb-4`}>
-              <DragIcon type="primary" />
-              <ConstructorElement
-                text={item.name}
-                price={item.price}
-                thumbnail={item.image}
+          {ingredients.length > 0 ? (
+            ingredients.map((item, index) => (
+              <ConstructorIngredient 
+                key={item.key} 
+                item={item} 
+                index={index} 
               />
-            </li>
-          ))}
+            ))
+          ) : (
+            <p className="text text_type_main-default ml-8">Добавьте начинку</p>
+          )}
         </ul>
 
         {bun && (
@@ -68,7 +112,8 @@ const BurgerConstructor: React.FC<IBurgerConstructorProps> = ({ data, onOrderCli
           htmlType="button" 
           type="primary" 
           size="large" 
-          onClick={onOrderClick}
+          onClick={handleOrderSubmit}
+          disabled={!bun}
         >
           Оформить заказ
         </Button>

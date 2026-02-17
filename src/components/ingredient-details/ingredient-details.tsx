@@ -1,20 +1,10 @@
 import React from 'react';
 import styles from './ingredient-details.module.css';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../services/store';
 
-interface IIngredient {
-  name: string;
-  image_large: string;
-  calories: number;
-  proteins: number;
-  fat: number;
-  carbohydrates: number;
-}
-
-interface IProps {
-  ingredient: IIngredient;
-}
-
-const IngredientDetails: React.FC<IProps> = ({ ingredient }) => {
+const IngredientDetails: React.FC = () => {
+  const { ingredient } = useSelector((state: RootState) => state.ingredientDetails);
   if (!ingredient) return null;
 
   return (

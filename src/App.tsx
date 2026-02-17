@@ -6,6 +6,13 @@ import BurgerConstructor from './components/burger-constructor/burger-constructo
 import Modal from './components/modal/modal';
 import IngredientDetails from './components/ingredient-details/ingredient-details';
 import OrderDetails from './components/order-details/order-details';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearIngredientDetails, setIngredientDetails } from './services/ingredientDetailsSlice';
+import { clearOrder } from './services/orderSlice';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { fetchIngredients } from './services/ingredientsSlice';
+import { AppDispatch, RootState } from './services/store';
 
 export interface IIngredient {
   _id: string;
@@ -22,38 +29,22 @@ export interface IIngredient {
   __v: number;
 }
 
-const API_URL = 'https://norma.education-services.ru/api/ingredients';
-
 function App() {
-  const [ingredients, setIngredients] = useState<IIngredient[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [hasError, setHasError] = useState<boolean>(false);
-  const [selectedIngredient, setSelectedIngredient] = useState<IIngredient | null>(null);
+  const { items, isLoading, error } = useSelector((state: RootState) => state.ingredients);
+  const { ingredient } = useSelector((state: RootState) => state.ingredientDetails);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
+  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    const fetchIngredients = async () => {
-      try {
-        setIsLoading(true);
-        const res = await fetch(API_URL);
-        if (!res.ok) throw new Error('Ошибка сети');
-        const result = await res.json();
-        setIngredients(result.data);
-      } catch (e) {
-        setHasError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchIngredients();
-  }, []);
+    dispatch(fetchIngredients());
+  }, [dispatch]);
 
   const handleOpenIngredientModal = (ingredient: IIngredient): void => {
-    setSelectedIngredient(ingredient);
+    dispatch(setIngredientDetails(ingredient));
   };
 
   const handleCloseIngredientModal = (): void => {
-    setSelectedIngredient(null);
+    dispatch(clearIngredientDetails());
   };
 
   const handleOpenOrderModal = (): void => {
@@ -61,6 +52,7 @@ function App() {
   };
 
   const handleCloseOrderModal = (): void => {
+    dispatch(clearOrder());
     setIsOrderModalOpen(false);
   };
 
@@ -70,25 +62,25 @@ function App() {
       
       <main className={styles.main}>
         {isLoading && <p className="text text_type_main-medium mt-10">Загрузка космических данных...</p>}
-        {hasError && <p className="text text_type_main-medium mt-10">Произошла ошибка. Связь с Марсом прервана.</p>}
+        {error && <p className="text text_type_main-medium mt-10">Произошла ошибка. Связь с Марсом прервана.</p>}
         
-        {!isLoading && !hasError && (
+        {!isLoading && !error && (
+          <DndProvider backend={HTML5Backend}>
           <div className={styles.container}>
             <BurgerIngredients 
-              data={ingredients} 
               onIngredientClick={handleOpenIngredientModal} 
             />
-            <BurgerConstructor 
-              data={ingredients} 
+            <BurgerConstructor
               onOrderClick={handleOpenOrderModal} 
             />
           </div>
+       </DndProvider>
         )}
       </main>
 
-      {selectedIngredient && (
+      {ingredient && (
         <Modal title="Детали ингредиента" onClose={handleCloseIngredientModal}>
-          <IngredientDetails ingredient={selectedIngredient} />
+          <IngredientDetails />
         </Modal>
       )}
 
