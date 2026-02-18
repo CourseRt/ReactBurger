@@ -2,9 +2,17 @@ import React from 'react';
 import styles from './ingredient-details.module.css';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../services/store';
+import { TIngredient } from '../../services/ingredientsSlice';
 
-const IngredientDetails: React.FC = () => {
-  const { ingredient } = useSelector((state: RootState) => state.ingredientDetails);
+interface IIngredientDetailsProps {
+  ingredient?: TIngredient;
+}
+
+const IngredientDetails: React.FC<IIngredientDetailsProps> = ({ ingredient: ingredientFromProps }) => {
+  
+  const { ingredient: ingredientFromStore } = useSelector((state: RootState) => state.ingredientDetails);
+  const ingredient = ingredientFromProps || ingredientFromStore;
+
   if (!ingredient) return null;
 
   return (
