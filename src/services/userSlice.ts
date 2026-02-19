@@ -25,7 +25,7 @@ const initialState: IUserState = {
 export const registerUser = createAsyncThunk(
   'user/register',
   async (data: { email: string; password: string; name: string }) => {
-    const res = await fetch(`${BASE_URL}/register`, {
+    const res = await fetch(`${BASE_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -42,7 +42,7 @@ export const registerUser = createAsyncThunk(
 export const loginUser = createAsyncThunk(
   'user/login',
   async (data: { email: string; password: string }) => {
-    const res = await fetch(`${BASE_URL}/login`, {
+    const res = await fetch(`${BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -57,7 +57,7 @@ export const loginUser = createAsyncThunk(
 );
 
 export const logoutUser = createAsyncThunk('user/logout', async () => {
-  const res = await fetch(`${BASE_URL}/logout`, {
+  const res = await fetch(`${BASE_URL}/auth/logout`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token: localStorage.getItem('refreshToken') }),
@@ -70,11 +70,11 @@ export const logoutUser = createAsyncThunk('user/logout', async () => {
 });
 
 export const getUser = createAsyncThunk('user/get', async () => {
-  return await fetchWithRefresh(`${BASE_URL}/user`, {
+  return await fetchWithRefresh(`${BASE_URL}/auth/user`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      authorization: getCookie('accessToken') || '' 
+      Authorization: getCookie('accessToken') || ''
     },
   });
 });
@@ -82,11 +82,11 @@ export const getUser = createAsyncThunk('user/get', async () => {
 export const updateUser = createAsyncThunk(
   'user/update',
   async (data: { email?: string; password?: string; name?: string }) => {
-    return await fetchWithRefresh(`${BASE_URL}/user`, {
+    return await fetchWithRefresh(`${BASE_URL}/auth/user`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        authorization: getCookie('accessToken') || ''
+        Authorization: getCookie('accessToken') || ''
       },
       body: JSON.stringify(data),
     });

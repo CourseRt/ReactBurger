@@ -14,6 +14,7 @@ export const HomePage: React.FC<IHomePageProps> = ({
   return (
     <DndProvider backend={HTML5Backend}>
       <div className={styles.container}>
+        <BurgerIngredients /> 
         <BurgerConstructor onOrderClick={handleOpenOrderModal} />
       </div>
     </DndProvider>

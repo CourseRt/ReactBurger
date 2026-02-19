@@ -25,6 +25,7 @@ import {
   ResetPasswordPage 
 } from './pages';
 import { ProtectedRouteElement } from './components/protectedRouteElement/protectedRouteElement';
+import { getCookie } from './utils/cookie';
 
 export interface IIngredient {
   _id: string;
@@ -50,10 +51,12 @@ function App() {
   const { isLoading, error } = useSelector((state: RootState) => state.ingredients);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    dispatch(getUser());
-    dispatch(fetchIngredients());
-  }, [dispatch]);
+ useEffect(() => {
+  dispatch(fetchIngredients());
+  if (getCookie('accessToken')) {
+      dispatch(getUser());
+  }
+}, [dispatch]);
 
   const handleModalClose = () => {
     navigate(-1);
@@ -73,11 +76,7 @@ function App() {
     <div className={styles.app}>
       <AppHeader />
       
-      <main className={styles.main}>
-        {isLoading && <p className="text text_type_main-medium mt-10">Загрузка космических данных...</p>}
-        {error && <p className="text text_type_main-medium mt-10">Ошибка связи с базой.</p>}
-        
-        {!isLoading && !error && (
+      <main className={styles.main}>        
           <Routes location={background || location}>
             <Route 
               path="/" 
@@ -95,7 +94,6 @@ function App() {
             
             <Route path="*" element={<NotFound404 />} />
           </Routes>
-        )}
       </main>
 
       {background && (

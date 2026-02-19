@@ -39,10 +39,9 @@ const DraggableIngredient: React.FC<{
 };
 
 interface IBurgerIngredientsProps {
-  onIngredientClick: (ingredient: IIngredient) => void;
 }
 
-const BurgerIngredients: React.FC<IBurgerIngredientsProps> = ({ onIngredientClick }) => {
+const BurgerIngredients: React.FC<IBurgerIngredientsProps> = () => {
   const dispatch = useDispatch();
   const [current, setCurrent] = useState<string>('bun');
   const { items } = useSelector((state: RootState) => state.ingredients);
@@ -74,11 +73,6 @@ const BurgerIngredients: React.FC<IBurgerIngredientsProps> = ({ onIngredientClic
     if (bunDelta < sauceDelta && bunDelta < mainDelta) setCurrent('bun');
     else if (sauceDelta < bunDelta && sauceDelta < mainDelta) setCurrent('sauce');
     else setCurrent('main');
-  };
-
-  const handleIngredientClick = (ingredient: IIngredient) => {
-    dispatch(setIngredientDetails(ingredient));
-    onIngredientClick(ingredient);
   };
 
   const location = useLocation();
