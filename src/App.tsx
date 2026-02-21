@@ -51,11 +51,9 @@ function App() {
   const { isLoading, error } = useSelector((state: RootState) => state.ingredients);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
 
- useEffect(() => {
+useEffect(() => {
   dispatch(fetchIngredients());
-  if (getCookie('accessToken')) {
-      dispatch(getUser());
-  }
+  dispatch(getUser()); 
 }, [dispatch]);
 
   const handleModalClose = () => {
