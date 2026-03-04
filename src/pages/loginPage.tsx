@@ -1,6 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 import { EmailInput, PasswordInput, Button } from '@ya.praktikum/react-developer-burger-ui-components';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../services/userSlice';
 import { AppDispatch, RootState } from '../services/store'; 
@@ -13,13 +13,18 @@ export const LoginPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { isLoading, error } = useSelector((state: RootState) => state.user);
+  const location = useLocation();
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     dispatch(loginUser({ email, password }))
       .unwrap()
-      .then(() => navigate('/'))
-      .catch(() => {     
+      .then(() => {
+        const from = location.state?.from || { pathname: '/' };
+        navigate(from, { replace: true });
+      })
+      .catch((err) => {
+        console.error("Login error:", err);
       });
   };
 

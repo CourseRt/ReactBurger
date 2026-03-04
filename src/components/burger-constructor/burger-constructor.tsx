@@ -8,6 +8,7 @@ import { addIngredient, clearConstructor, removeIngredient } from '../../service
 import { RootState, AppDispatch } from '../../services/store';
 import { useDrop } from 'react-dnd';
 import { ConstructorIngredient } from './constructor-ingredient';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 {/*Проверка типизации, чтоб не создавать prop-types в конце файла
    интерфейс будет контролировать данные, приходящие в компонент(9 пункт курсовой)*/}
@@ -18,6 +19,9 @@ interface IBurgerConstructorProps {
 const BurgerConstructor: React.FC<IBurgerConstructorProps> = ({ onOrderClick }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { bun, ingredients } = useSelector((state: RootState) => state.burgerConstructor);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const user = useSelector((state: RootState) => state.user.user);
 
   const [{ isHover }, dropTarget] = useDrop({
     accept: 'ingredient',
@@ -32,17 +36,21 @@ const BurgerConstructor: React.FC<IBurgerConstructorProps> = ({ onOrderClick }) 
 
 const handleOrderSubmit = () => {
   if (!bun) return;
+  if (!user) {
+    navigate('/login', { state: { from: location } });
+    return;
+  }
   const orderIds = [bun._id, ...ingredients.map(item => item._id), bun._id];
 
   dispatch(postOrder(orderIds))
     .unwrap()
     .then(() => {
-      dispatch(clearConstructor()); 
+      dispatch(clearConstructor());
+      onOrderClick();
     })
     .catch((error) => {
       console.error("Ошибка при оформлении заказа:", error);
     });
-  onOrderClick();
 };
 
   const totalPrice = useMemo(() => {
