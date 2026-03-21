@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { setCookie, deleteCookie, getCookie } from '../utils/cookie'; 
-import { BASE_URL } from '../utils/constants';
+import { BASE_URL, checkResponse } from '../utils/constants';
 import { fetchWithRefresh } from '../utils/api';
 
 interface IUser {
@@ -30,9 +30,7 @@ export const registerUser = createAsyncThunk(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    const json = await res.json();
-    if (!json.success) return Promise.reject(json.message);
-    
+    const json = await checkResponse(res);    
     setCookie('accessToken', json.accessToken);
     localStorage.setItem('refreshToken', json.refreshToken);
     return json.user;
@@ -47,9 +45,7 @@ export const loginUser = createAsyncThunk(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    const json = await res.json();
-    if (!json.success) return Promise.reject(json.message);
-    
+    const json = await checkResponse(res);    
     setCookie('accessToken', json.accessToken);
     localStorage.setItem('refreshToken', json.refreshToken);
     return json.user;
@@ -62,11 +58,10 @@ export const logoutUser = createAsyncThunk('user/logout', async () => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token: localStorage.getItem('refreshToken') }),
   });
-  const json = await res.json();
-  if (json.success) {
+  const json = await checkResponse(res);
     deleteCookie('accessToken');
     localStorage.removeItem('refreshToken');
-  }
+  return json;
 });
 
 export const getUser = createAsyncThunk('user/get', async () => {
@@ -121,7 +116,7 @@ const userSlice = createSlice({
         state.user = null;
       })
       .addCase(getUser.fulfilled, (state, action) => {
-        state.user = action.payload;
+        state.user = action.payload.user;
         state.isAuthChecked = true;
       })
       .addCase(getUser.rejected, (state) => {

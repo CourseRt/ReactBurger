@@ -1,7 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { PasswordInput, Input, Button } from '@ya.praktikum/react-developer-burger-ui-components';
 import { Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
-import { BASE_URL } from '../utils/constants';
+import { BASE_URL, checkResponse } from '../utils/constants';
 import styles from './styles/login.module.css';
 
 export const ResetPasswordPage = () => {
@@ -21,7 +21,7 @@ export const ResetPasswordPage = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password, token })
     })
-      .then(res => res.ok ? res.json() : Promise.reject(res))
+      .then(checkResponse) 
       .then(json => {
         if (json.success) {
           alert('Пароль изменен!');

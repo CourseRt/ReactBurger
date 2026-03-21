@@ -4,7 +4,7 @@ import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../services/store';
 import styles from './styles/login.module.css';
-import { BASE_URL } from '../utils/constants';
+import { BASE_URL, checkResponse } from '../utils/constants';
 
 export const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -28,7 +28,7 @@ export const ForgotPasswordPage = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
     })
-      .then(res => res.json())
+      .then(checkResponse)
       .then(json => {
         if (json.success) {
           navigate('/reset-password', { state: { fromForgotPassword: true } });
