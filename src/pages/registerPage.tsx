@@ -1,7 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { Input, EmailInput, PasswordInput, Button } from '@ya.praktikum/react-developer-burger-ui-components';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from '../services/hooks';
 import { registerUser } from '../services/userSlice';
 import { AppDispatch } from '../services/store';
 import styles from './styles/login.module.css';
@@ -10,7 +10,7 @@ export const RegisterPage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = (e: FormEvent) => {

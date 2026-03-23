@@ -1,8 +1,7 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { EmailInput, Button } from '@ya.praktikum/react-developer-burger-ui-components';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../services/store';
+import { useAppSelector } from '../services/hooks';
 import styles from './styles/login.module.css';
 import { BASE_URL, checkResponse } from '../utils/constants';
 
@@ -10,7 +9,7 @@ export const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
   
-  const { user, isAuthChecked } = useSelector((state: RootState) => state.user);
+  const { user, isAuthChecked } = useAppSelector((state) => state.user);
 
   if (!isAuthChecked) return null;
   if (user) {

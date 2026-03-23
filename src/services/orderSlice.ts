@@ -1,37 +1,67 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { BASE_URL, checkResponse } from '../utils/constants';
+import { fetchWithRefresh } from '../utils/api';
+import { getCookie } from '../utils/cookie';
 
-export const postOrder = createAsyncThunk(
+interface IOrderState {
+  orderNumber: number | null;
+  isLoading: boolean;
+  hasError: boolean;
+}
+
+const initialState: IOrderState = {
+  orderNumber: null,
+  isLoading: false,
+  hasError: false,
+};
+
+interface IOrderResponse {
+  success: boolean;
+  name: string;
+  order: {
+    number: number;
+  };
+}
+
+export const postOrder = createAsyncThunk<number, string[]>(
   'order/postOrder',
-  (ingredientIds: string[]) => {
-    return fetch(`${BASE_URL}/orders`, {
+  async (ingredientIds) => {
+    const data = await fetchWithRefresh<IOrderResponse>(`${BASE_URL}/orders`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: getCookie('accessToken') || ''
       },
       body: JSON.stringify({
         ingredients: ingredientIds,
       }),
-    })
-      .then(checkResponse)
-      .then((data: any) => data.order.number);
+    });
+    return data.order.number;
   }
 );
 
 const orderSlice = createSlice({
   name: 'order',
-  initialState: { orderNumber: null as number | null, isLoading: false, hasError: false },
+  initialState,
   reducers: {
-    clearOrder: (state) => { state.orderNumber = null; }
+    clearOrder: (state) => {
+      state.orderNumber = null;
+    }
   },
   extraReducers: (builder) => {
     builder
-      .addCase(postOrder.pending, (state) => { state.isLoading = true; state.hasError = false; })
+      .addCase(postOrder.pending, (state) => {
+        state.isLoading = true;
+        state.hasError = false;
+      })
       .addCase(postOrder.fulfilled, (state, action) => {
         state.isLoading = false;
         state.orderNumber = action.payload;
       })
-      .addCase(postOrder.rejected, (state) => { state.isLoading = false; state.hasError = true; });
+      .addCase(postOrder.rejected, (state) => {
+        state.isLoading = false;
+        state.hasError = true;
+      });
   }
 });
 

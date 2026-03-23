@@ -1,14 +1,13 @@
 import React, { useMemo } from 'react';
 import { ConstructorElement, Button, CurrencyIcon, DragIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './burger-constructor.module.css';
-import { IIngredient } from '../../App';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { postOrder } from '../../services/orderSlice';
 import { addIngredient, clearConstructor, removeIngredient } from '../../services/constructorSlice';
-import { RootState, AppDispatch } from '../../services/store';
 import { useDrop } from 'react-dnd';
 import { ConstructorIngredient } from './constructor-ingredient';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { TIngredient } from '../../utils/types';
 
 {/*Проверка типизации, чтоб не создавать prop-types в конце файла
    интерфейс будет контролировать данные, приходящие в компонент(9 пункт курсовой)*/}
@@ -17,15 +16,15 @@ interface IBurgerConstructorProps {
 }
 
 const BurgerConstructor: React.FC<IBurgerConstructorProps> = ({ onOrderClick }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { bun, ingredients } = useSelector((state: RootState) => state.burgerConstructor);
+  const dispatch = useAppDispatch();
+  const { bun, ingredients } = useAppSelector((state) => state.burgerConstructor);
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useSelector((state: RootState) => state.user.user);
+  const user = useAppSelector((state) => state.user.user);
 
-  const [{ isHover }, dropTarget] = useDrop({
+  const [{ isHover }, dropTarget] = useDrop<TIngredient, void, { isHover: boolean }>({
     accept: 'ingredient',
-    drop(item: any) {
+    drop(item) {
       console.log('Добавляем в конструктор:', item);
       dispatch(addIngredient(item));
     },

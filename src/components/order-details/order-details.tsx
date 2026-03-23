@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from './order-details.module.css';
 import doneImage from '../../images/done.png';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '../../services/hooks';
 import { RootState } from '../../services/store';
 
 const OrderDetails = () => {
-   const { orderNumber, isLoading, hasError } = useSelector((state: RootState) => state.order);
+   const { orderNumber, isLoading, hasError } = useAppSelector((state) => state.order);
 
     if (isLoading) {
     return (

@@ -1,15 +1,13 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { Tab, Counter, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import { useDrag } from 'react-dnd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import styles from './burger-ingredients.module.css';
-import { IIngredient } from '../../App';
-import { setIngredientDetails } from '../../services/ingredientDetailsSlice';
-import { RootState } from '../../services/store';
+import { TIngredient } from '../../utils/types';
 import { Link, useLocation } from 'react-router-dom';
 
 const DraggableIngredient: React.FC<{ 
-  item: IIngredient; 
+  item: TIngredient; 
   count: number;
 }> = ({ item, count }) => {
   const [{ isDragging }, dragRef] = useDrag({
@@ -42,10 +40,10 @@ interface IBurgerIngredientsProps {
 }
 
 const BurgerIngredients: React.FC<IBurgerIngredientsProps> = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [current, setCurrent] = useState<string>('bun');
-  const { items } = useSelector((state: RootState) => state.ingredients);
-  const { bun, ingredients: constructorIngredients } = useSelector((state: RootState) => state.burgerConstructor);
+  const { items } = useAppSelector((state) => state.ingredients);
+  const { bun, ingredients: constructorIngredients } = useAppSelector((state) => state.burgerConstructor);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const bunRef = useRef<HTMLHeadingElement>(null);
@@ -56,7 +54,7 @@ const BurgerIngredients: React.FC<IBurgerIngredientsProps> = () => {
   const sauces = useMemo(() => items.filter((item) => item.type === 'sauce'), [items]);
   const mains = useMemo(() => items.filter((item) => item.type === 'main'), [items]);
 
-  const getIngredientCount = (ingredient: IIngredient) => {
+  const getIngredientCount = (ingredient: TIngredient) => {
     if (ingredient.type === 'bun') {
       return bun?._id === ingredient._id ? 2 : 0;
     }

@@ -1,52 +1,45 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { BASE_URL, checkResponse } from '../utils/constants';
+import { TIngredient } from '../utils/types';
 
-{/*Проверка типизации, чтоб не создавать prop-types в конце файла
-   интерфейс будет контролировать данные, приходящие в компонент(9 пункт курсовой)*/}
-export interface TIngredient {
-  _id: string;
-  name: string;
-  type: string;
-  proteins: number;
-  fat: number;
-  carbohydrates: number;
-  calories: number;
-  price: number;
-  image: string;
-  image_mobile: string;
-  image_large: string;
-  __v: number;
+interface IIngredientsState {
+  items: TIngredient[];
+  isLoading: boolean;
+  error: string | null;
 }
 
-export const fetchIngredients = createAsyncThunk(
+const initialState: IIngredientsState = {
+  items: [],
+  isLoading: false,
+  error: null,
+};
+
+export const fetchIngredients = createAsyncThunk<TIngredient[]>(
   'ingredients/fetchIngredients',
-  () => {
-    return fetch(`${BASE_URL}/ingredients`)
-      .then(checkResponse)
-      .then((data: any) => data.data);
+  async () => {
+    const res = await fetch(`${BASE_URL}/ingredients`);
+    const data = await checkResponse(res);
+    return data.data; 
   }
 );
+
 const ingredientsSlice = createSlice({
   name: 'ingredients',
-  initialState: { 
-    items: [] as TIngredient[], 
-    isLoading: false, 
-    error: null as string | null 
-  },
+  initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchIngredients.pending, (state) => { 
-        state.isLoading = true; 
+      .addCase(fetchIngredients.pending, (state) => {
+        state.isLoading = true;
         state.error = null;
       })
       .addCase(fetchIngredients.fulfilled, (state, action) => {
         state.isLoading = false;
         state.items = action.payload;
       })
-      .addCase(fetchIngredients.rejected, (state) => { 
+      .addCase(fetchIngredients.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = 'Ошибка при загрузке';
+        state.error = action.error.message || 'Ошибка при загрузке';
       });
   }
 });
