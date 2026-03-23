@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from './services/hooks';
 
 import styles from './app.module.css';
 import AppHeader from './components/app-header/app-header';
@@ -12,7 +12,6 @@ import { clearIngredientDetails } from './services/ingredientDetailsSlice';
 import { clearOrder } from './services/orderSlice';
 import { fetchIngredients } from './services/ingredientsSlice';
 import { getUser } from './services/userSlice';
-import { AppDispatch, RootState } from './services/store';
 
 import { 
   HomePage, 
@@ -25,30 +24,15 @@ import {
   ResetPasswordPage 
 } from './pages';
 import { ProtectedRouteElement } from './components/protectedRouteElement/protectedRouteElement';
-import { getCookie } from './utils/cookie';
-
-export interface IIngredient {
-  _id: string;
-  name: string;
-  type: string;
-  proteins: number;
-  fat: number;
-  carbohydrates: number;
-  calories: number;
-  price: number;
-  image: string;
-  image_mobile: string;
-  image_large: string;
-  __v: number;
-}
 
 function App() {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
-  const background = location.state && location.state.background;
+  const background = (location.state as { background?: Location })?.background;
+  const { isAuthChecked } = useAppSelector((state) => state.user);
 
-  const { isLoading, error } = useSelector((state: RootState) => state.ingredients);
+  const { isLoading, error } = useAppSelector((state) => state.ingredients);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
 
 useEffect(() => {
@@ -56,9 +40,12 @@ useEffect(() => {
   dispatch(getUser()); 
 }, [dispatch]);
 
+  if (!isAuthChecked) {
+    return null;
+  }
+
   const handleModalClose = () => {
     navigate(-1);
-    dispatch(clearIngredientDetails());
   };
 
   const handleOpenOrderModal = () => {

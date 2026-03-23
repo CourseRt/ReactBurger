@@ -22,6 +22,13 @@ const initialState: IUserState = {
   error: null,
 };
 
+interface IUserResponse {
+  success: boolean;
+  user: IUser;
+  accessToken?: string;
+  refreshToken?: string;
+}
+
 export const registerUser = createAsyncThunk(
   'user/register',
   async (data: { email: string; password: string; name: string }) => {
@@ -37,7 +44,7 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-export const loginUser = createAsyncThunk(
+export const loginUser = createAsyncThunk<IUser, { email: string; password: string }>(
   'user/login',
   async (data: { email: string; password: string }) => {
     const res = await fetch(`${BASE_URL}/auth/login`, {
@@ -64,20 +71,23 @@ export const logoutUser = createAsyncThunk('user/logout', async () => {
   return json;
 });
 
-export const getUser = createAsyncThunk('user/get', async () => {
-  return await fetchWithRefresh(`${BASE_URL}/auth/user`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: getCookie('accessToken') || ''
-    },
-  });
-});
+export const getUser = createAsyncThunk<IUserResponse>(
+  'user/get', 
+  async () => {
+    return await fetchWithRefresh<IUserResponse>(`${BASE_URL}/auth/user`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: getCookie('accessToken') || ''
+      },
+    });
+  }
+);
 
-export const updateUser = createAsyncThunk(
+export const updateUser = createAsyncThunk<IUserResponse, { email?: string; name?: string; password?: string }>(
   'user/update',
-  async (data: { email?: string; password?: string; name?: string }) => {
-    return await fetchWithRefresh(`${BASE_URL}/auth/user`, {
+  async (data) => {
+    return await fetchWithRefresh<IUserResponse>(`${BASE_URL}/auth/user`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

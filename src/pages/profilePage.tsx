@@ -1,16 +1,15 @@
 import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useAppSelector, useAppDispatch } from '../services/hooks';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Input, EmailInput, PasswordInput, Button } from '@ya.praktikum/react-developer-burger-ui-components';
 import { updateUser, logoutUser } from '../services/userSlice';
-import { RootState, AppDispatch } from '../services/store';
 import styles from './styles/profile.module.css';
 
 export const ProfilePage = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   
-  const { user } = useSelector((state: RootState) => state.user);
+  const { user } = useAppSelector((state) => state.user);
 
   const [formValue, setFormValue] = useState({
     name: '',

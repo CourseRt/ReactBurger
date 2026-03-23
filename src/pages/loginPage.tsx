@@ -1,18 +1,17 @@
 import React, { useState, FormEvent } from 'react';
 import { EmailInput, PasswordInput, Button } from '@ya.praktikum/react-developer-burger-ui-components';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../services/hooks';
 import { loginUser } from '../services/userSlice';
-import { AppDispatch, RootState } from '../services/store'; 
 import styles from './styles/login.module.css';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { isLoading, error } = useSelector((state: RootState) => state.user);
+  const { isLoading, error } = useAppSelector((state) => state.user);
   const location = useLocation();
 
   const handleSubmit = (e: FormEvent) => {
