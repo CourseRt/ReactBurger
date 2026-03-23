@@ -6,12 +6,12 @@ import styles from './burger-ingredients.module.css';
 import { IIngredient } from '../../App';
 import { setIngredientDetails } from '../../services/ingredientDetailsSlice';
 import { RootState } from '../../services/store';
+import { Link, useLocation } from 'react-router-dom';
 
 const DraggableIngredient: React.FC<{ 
   item: IIngredient; 
-  onIngredientClick: (item: IIngredient) => void;
   count: number;
-}> = ({ item, onIngredientClick, count }) => {
+}> = ({ item, count }) => {
   const [{ isDragging }, dragRef] = useDrag({
     type: 'ingredient',
     item: item,
@@ -24,7 +24,6 @@ const DraggableIngredient: React.FC<{
     <li 
       ref={(node) => { dragRef(node); }}
       className={styles.card} 
-      onClick={() => onIngredientClick(item)}
       style={{ opacity: isDragging ? 0.4 : 1, cursor: 'grab' }}
     >
       {count > 0 && <Counter count={count} size="default" />}
@@ -40,10 +39,9 @@ const DraggableIngredient: React.FC<{
 };
 
 interface IBurgerIngredientsProps {
-  onIngredientClick: (ingredient: IIngredient) => void;
 }
 
-const BurgerIngredients: React.FC<IBurgerIngredientsProps> = ({ onIngredientClick }) => {
+const BurgerIngredients: React.FC<IBurgerIngredientsProps> = () => {
   const dispatch = useDispatch();
   const [current, setCurrent] = useState<string>('bun');
   const { items } = useSelector((state: RootState) => state.ingredients);
@@ -77,64 +75,77 @@ const BurgerIngredients: React.FC<IBurgerIngredientsProps> = ({ onIngredientClic
     else setCurrent('main');
   };
 
-  const handleIngredientClick = (ingredient: IIngredient) => {
-    dispatch(setIngredientDetails(ingredient));
-    onIngredientClick(ingredient);
-  };
+  const location = useLocation();
 
-  return (
-    <section className={styles.ingredients}>
-      <h1 className="text text_type_main-large mt-10 mb-5">Соберите бургер</h1>
+ return (
+  <section className={styles.ingredients}>
+    <h1 className="text text_type_main-large mt-10 mb-5">Соберите бургер</h1>
+    
+    <div className={styles.tabs} style={{ display: 'flex' }}>
+      <Tab value="bun" active={current === 'bun'} onClick={() => setCurrent('bun')}>Булки</Tab>
+      <Tab value="sauce" active={current === 'sauce'} onClick={() => setCurrent('sauce')}>Соусы</Tab>
+      <Tab value="main" active={current === 'main'} onClick={() => setCurrent('main')}>Начинки</Tab>
+    </div>
+
+    <div 
+      className={`${styles.scrollArea} custom-scroll mt-10`} 
+      ref={containerRef} 
+      onScroll={handleScroll}
+    >
+      <h2 ref={bunRef} className="text text_type_main-medium mb-6">Булки</h2>
+      <ul className={styles.grid}>
+        {buns.map(item => (
+          <Link
+            key={item._id}
+            to={`/ingredients/${item._id}`}
+            state={{ background: location }}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <DraggableIngredient 
+              item={item} 
+              count={getIngredientCount(item)} 
+            />
+          </Link>
+        ))}
+      </ul>
       
-      <div className={styles.tabs} style={{ display: 'flex' }}>
-        <Tab value="bun" active={current === 'bun'} onClick={() => setCurrent('bun')}>Булки</Tab>
-        <Tab value="sauce" active={current === 'sauce'} onClick={() => setCurrent('sauce')}>Соусы</Tab>
-        <Tab value="main" active={current === 'main'} onClick={() => setCurrent('main')}>Начинки</Tab>
-      </div>
+      <h2 ref={sauceRef} className="text text_type_main-medium mb-6 mt-10">Соусы</h2>
+      <ul className={styles.grid}>
+        {sauces.map(item => (
+          <Link
+            key={item._id}
+            to={`/ingredients/${item._id}`}
+            state={{ background: location }}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <DraggableIngredient 
+              item={item} 
+              count={getIngredientCount(item)} 
+            />
+          </Link>
+        ))}
+      </ul>
+      
+      <h2 ref={mainRef} className="text text_type_main-medium mb-6 mt-10">Начинки</h2>
+      <ul className={styles.grid}>
+        {mains.map(item => (
+          <Link
+            key={item._id}
+            to={`/ingredients/${item._id}`}
+            state={{ background: location }}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <DraggableIngredient 
+              item={item} 
+              count={getIngredientCount(item)} 
+            />
+          </Link>
+        ))}
+      </ul>
+    </div>
+  </section>
+);
 
-      <div 
-        className={`${styles.scrollArea} custom-scroll mt-10`} 
-        ref={containerRef} 
-        onScroll={handleScroll}
-      >
-        <h2 ref={bunRef} className="text text_type_main-medium mb-6">Булки</h2>
-        <ul className={styles.grid}>
-          {buns.map(item => (
-            <DraggableIngredient 
-              key={item._id} 
-              item={item} 
-              onIngredientClick={handleIngredientClick} 
-              count={getIngredientCount(item)} 
-            />
-          ))}
-        </ul>
-        
-        <h2 ref={sauceRef} className="text text_type_main-medium mb-6 mt-10">Соусы</h2>
-        <ul className={styles.grid}>
-          {sauces.map(item => (
-            <DraggableIngredient 
-              key={item._id} 
-              item={item} 
-              onIngredientClick={handleIngredientClick} 
-              count={getIngredientCount(item)} 
-            />
-          ))}
-        </ul>
-        
-        <h2 ref={mainRef} className="text text_type_main-medium mb-6 mt-10">Начинки</h2>
-        <ul className={styles.grid}>
-          {mains.map(item => (
-            <DraggableIngredient 
-              key={item._id} 
-              item={item} 
-              onIngredientClick={handleIngredientClick} 
-              count={getIngredientCount(item)} 
-            />
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
 };
 
 export default BurgerIngredients;

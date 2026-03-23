@@ -1,11 +1,26 @@
 import React from 'react';
 import styles from './ingredient-details.module.css';
 import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom'; // Импорт для получения ID из URL
 import { RootState } from '../../services/store';
+import { TIngredient } from '../../services/ingredientsSlice';
 
-const IngredientDetails: React.FC = () => {
-  const { ingredient } = useSelector((state: RootState) => state.ingredientDetails);
-  if (!ingredient) return null;
+interface IIngredientDetailsProps {
+  ingredient?: TIngredient;
+}
+
+const IngredientDetails: React.FC<IIngredientDetailsProps> = ({ ingredient: ingredientFromProps }) => {
+  const { id } = useParams<{ id: string }>();
+  const { items } = useSelector((state: RootState) => state.ingredients);
+  const ingredient = ingredientFromProps || items.find((item) => item._id === id);
+  
+  if (!ingredient) {
+    return (
+      <div className={styles.container}>
+        <p className="text text_type_main-large">Загрузка данных...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>

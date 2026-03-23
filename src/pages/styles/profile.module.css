@@ -1,0 +1,58 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 120px;
+  width: 100%;
+  gap: 60px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+}
+
+.link, .linkActive, .buttonExit {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  text-decoration: none;
+  font-size: 24px;
+  line-height: 30px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.link {
+  color: #8585AD;
+}
+
+.linkActive {
+  color: #F2F2F3;
+}
+
+.buttonExit {
+  color: #8585AD;
+  justify-content: flex-start;
+}
+
+.buttonExit:hover, .link:hover {
+  color: #F2F2F3;
+}
+
+.caption {
+  margin-top: 80px;
+  color: #8585AD;
+  opacity: 0.4;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 480px;
+}

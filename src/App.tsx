@@ -1,18 +1,31 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
 import styles from './app.module.css';
 import AppHeader from './components/app-header/app-header';
-import BurgerIngredients from './components/burger-ingredients/burger-ingredients';
-import BurgerConstructor from './components/burger-constructor/burger-constructor';
 import Modal from './components/modal/modal';
 import IngredientDetails from './components/ingredient-details/ingredient-details';
 import OrderDetails from './components/order-details/order-details';
-import { useDispatch, useSelector } from 'react-redux';
-import { clearIngredientDetails, setIngredientDetails } from './services/ingredientDetailsSlice';
+
+import { clearIngredientDetails } from './services/ingredientDetailsSlice';
 import { clearOrder } from './services/orderSlice';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import { fetchIngredients } from './services/ingredientsSlice';
+import { getUser } from './services/userSlice';
 import { AppDispatch, RootState } from './services/store';
+
+import { 
+  HomePage, 
+  LoginPage, 
+  ForgotPasswordPage, 
+  IngredientPage, 
+  NotFound404, 
+  ProfilePage, 
+  RegisterPage, 
+  ResetPasswordPage 
+} from './pages';
+import { ProtectedRouteElement } from './components/protectedRouteElement/protectedRouteElement';
+import { getCookie } from './utils/cookie';
 
 export interface IIngredient {
   _id: string;
@@ -30,28 +43,29 @@ export interface IIngredient {
 }
 
 function App() {
-  const { items, isLoading, error } = useSelector((state: RootState) => state.ingredients);
-  const { ingredient } = useSelector((state: RootState) => state.ingredientDetails);
-  const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
   const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const background = location.state && location.state.background;
 
-  useEffect(() => {
-    dispatch(fetchIngredients());
-  }, [dispatch]);
+  const { isLoading, error } = useSelector((state: RootState) => state.ingredients);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState<boolean>(false);
 
-  const handleOpenIngredientModal = (ingredient: IIngredient): void => {
-    dispatch(setIngredientDetails(ingredient));
-  };
+useEffect(() => {
+  dispatch(fetchIngredients());
+  dispatch(getUser()); 
+}, [dispatch]);
 
-  const handleCloseIngredientModal = (): void => {
+  const handleModalClose = () => {
+    navigate(-1);
     dispatch(clearIngredientDetails());
   };
 
-  const handleOpenOrderModal = (): void => {
+  const handleOpenOrderModal = () => {
     setIsOrderModalOpen(true);
   };
 
-  const handleCloseOrderModal = (): void => {
+  const handleCloseOrderModal = () => {
     dispatch(clearOrder());
     setIsOrderModalOpen(false);
   };
@@ -60,28 +74,37 @@ function App() {
     <div className={styles.app}>
       <AppHeader />
       
-      <main className={styles.main}>
-        {isLoading && <p className="text text_type_main-medium mt-10">Загрузка космических данных...</p>}
-        {error && <p className="text text_type_main-medium mt-10">Произошла ошибка. Связь с Марсом прервана.</p>}
-        
-        {!isLoading && !error && (
-          <DndProvider backend={HTML5Backend}>
-          <div className={styles.container}>
-            <BurgerIngredients 
-              onIngredientClick={handleOpenIngredientModal} 
+      <main className={styles.main}>        
+          <Routes location={background || location}>
+            <Route 
+              path="/" 
+              element={<HomePage handleOpenOrderModal={handleOpenOrderModal} />} 
             />
-            <BurgerConstructor
-              onOrderClick={handleOpenOrderModal} 
-            />
-          </div>
-       </DndProvider>
-        )}
+            <Route path="/login" element={<ProtectedRouteElement onlyUnAuth component={<LoginPage />} />} />
+            <Route path="/register" element={<ProtectedRouteElement onlyUnAuth component={<RegisterPage />} />} />
+            <Route path="/forgot-password" element={<ProtectedRouteElement onlyUnAuth component={<ForgotPasswordPage />} />} />
+            <Route path="/reset-password" element={<ProtectedRouteElement onlyUnAuth component={<ResetPasswordPage />} />} />
+            
+            <Route path="/profile" element={<ProtectedRouteElement component={<ProfilePage />} />} />
+            <Route path="/profile/orders" element={<ProtectedRouteElement component={<ProfilePage />} />} />
+            
+            <Route path="/ingredients/:id" element={<IngredientPage />} />
+            
+            <Route path="*" element={<NotFound404 />} />
+          </Routes>
       </main>
 
-      {ingredient && (
-        <Modal title="Детали ингредиента" onClose={handleCloseIngredientModal}>
-          <IngredientDetails />
-        </Modal>
+      {background && (
+        <Routes>
+          <Route 
+            path="/ingredients/:id" 
+            element={
+              <Modal title="Детали ингредиента" onClose={handleModalClose}>
+                <IngredientDetails />
+              </Modal>
+            } 
+          />
+        </Routes>
       )}
 
       {isOrderModalOpen && (
