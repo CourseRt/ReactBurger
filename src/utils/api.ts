@@ -1,5 +1,5 @@
 import { BASE_URL } from './constants';
-import { setCookie } from './cookie';
+import { getCookie, setCookie } from './cookie';
 
 interface IServerResponse {
   success: boolean;
@@ -50,4 +50,13 @@ export const fetchWithRefresh = async <T>(url: string, options: RequestInit): Pr
       return Promise.reject(err);
     }
   }
+};
+
+export const getOrderRequest = (number: string) => {
+  return fetch(`${BASE_URL}/orders/${number}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }).then(checkResponse);
 };

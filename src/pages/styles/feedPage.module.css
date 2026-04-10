@@ -1,0 +1,47 @@
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 600px 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+}
+
+.board {
+  display: flex;
+  gap: 36px;
+}
+
+.column {
+  flex: 1;
+}
+
+.statusColumns {
+  display: flex;
+  gap: 36px;
+}
+
+.orderList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.digitsShadow {
+  text-shadow: 0px 0px 16px rgba(51, 51, 255, 0.25), 
+               0px 0px 8px rgba(51, 51, 255, 0.25);
+}
