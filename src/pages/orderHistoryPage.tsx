@@ -4,8 +4,10 @@ import { OrderCard } from '../components/order-card/orderCard';
 import { wsConnect, wsDisconnect } from '../services/profileOrdersSlice'; 
 import { getCookie } from '../utils/cookie';
 import styles from './styles/orderHistoryPage.module.css';
+import { Link, useLocation } from 'react-router-dom';
 
 export const OrderHistoryPage: React.FC = () => {
+  const location = useLocation();
   const dispatch = useAppDispatch();
 
   const allIngredients = useAppSelector((state) => state.ingredients.items);
@@ -37,12 +39,18 @@ export const OrderHistoryPage: React.FC = () => {
   return (
     <section className={`${styles.container} custom-scroll`}>
       {reversedOrders.map((order) => (
-        <OrderCard 
-          key={order._id} 
-          order={order} 
-          allIngredients={allIngredients} 
-          isHistory={true} 
-        />
+        <Link
+          key={order._id}
+          to={`/profile/orders/${order.number}`}
+          state={{ background: location }}
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          <OrderCard 
+            order={order} 
+            allIngredients={allIngredients} 
+            isHistory={true} 
+          />
+        </Link>
       ))}
     </section>
   );

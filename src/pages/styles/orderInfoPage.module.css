@@ -3,6 +3,7 @@
   flex-direction: column;
   width: 640px;
   box-sizing: border-box;
+  padding: 0 40px 40px 40px;
 }
 
 .loader {
@@ -15,8 +16,9 @@
 
 .number {
   display: block;
-  text-align: center;
+  text-align: left;
   width: 100%;
+  margin-bottom: 40px; 
 }
 
 .statusDone {
