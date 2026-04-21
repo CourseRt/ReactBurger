@@ -6,3 +6,6 @@ export * from './notFound404';
 export * from './profilePage';
 export * from './registerPage';
 export * from './resetPasswordPage';
+export * from './feedPage';
+export * from './orderHistoryPage';
+export * from './orderInfoPage';

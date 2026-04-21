@@ -16,3 +16,18 @@ export interface TIngredient {
 export interface TConstructorIngredient extends TIngredient {
   id: string;
 }
+
+export interface IOrder {
+  _id: string;
+  ingredients: string[];
+  status: 'created' | 'pending' | 'done';
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  number: number;
+}
+
+export interface IOrderProps {
+  order: IOrder;
+  showStatus?: boolean;
+}

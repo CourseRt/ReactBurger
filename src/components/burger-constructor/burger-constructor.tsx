@@ -25,7 +25,6 @@ const BurgerConstructor: React.FC<IBurgerConstructorProps> = ({ onOrderClick }) 
   const [{ isHover }, dropTarget] = useDrop<TIngredient, void, { isHover: boolean }>({
     accept: 'ingredient',
     drop(item) {
-      console.log('Добавляем в конструктор:', item);
       dispatch(addIngredient(item));
     },
     collect: (monitor) => ({

@@ -21,7 +21,10 @@ import {
   NotFound404, 
   ProfilePage, 
   RegisterPage, 
-  ResetPasswordPage 
+  ResetPasswordPage,
+  FeedPage, 
+  OrderHistoryPage, 
+  OrderInfoPage 
 } from './pages';
 import { ProtectedRouteElement } from './components/protectedRouteElement/protectedRouteElement';
 
@@ -71,9 +74,14 @@ useEffect(() => {
             <Route path="/register" element={<ProtectedRouteElement onlyUnAuth component={<RegisterPage />} />} />
             <Route path="/forgot-password" element={<ProtectedRouteElement onlyUnAuth component={<ForgotPasswordPage />} />} />
             <Route path="/reset-password" element={<ProtectedRouteElement onlyUnAuth component={<ResetPasswordPage />} />} />
+
+            <Route path="/feed" element={<FeedPage />} />
+            <Route path="/feed/:id" element={<OrderInfoPage />} />
             
-            <Route path="/profile" element={<ProtectedRouteElement component={<ProfilePage />} />} />
-            <Route path="/profile/orders" element={<ProtectedRouteElement component={<ProfilePage />} />} />
+            <Route path="/profile" element={<ProtectedRouteElement component={<ProfilePage />} />}>
+              <Route path="orders" element={<OrderHistoryPage />} />
+              <Route path="orders/:id" element={<OrderInfoPage />} />
+            </Route>
             
             <Route path="/ingredients/:id" element={<IngredientPage />} />
             
@@ -89,6 +97,26 @@ useEffect(() => {
               <Modal title="Детали ингредиента" onClose={handleModalClose}>
                 <IngredientDetails />
               </Modal>
+            } 
+          />
+
+          <Route 
+            path="/feed/:id" 
+            element={
+              <Modal onClose={handleModalClose}>
+                <OrderInfoPage />
+              </Modal>
+            } 
+          />
+
+          <Route 
+            path="/profile/orders/:id" 
+            element={
+              <ProtectedRouteElement component={
+                <Modal onClose={handleModalClose}>
+                  <OrderInfoPage />
+                </Modal>
+              } />
             } 
           />
         </Routes>
