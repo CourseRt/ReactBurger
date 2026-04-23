@@ -1,3 +1,8 @@
+# Stellar Burgers 🍔
+
+**Ссылка на проект:** https://CourseRt.github.io/ReactBurger
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
