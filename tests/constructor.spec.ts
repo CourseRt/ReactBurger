@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:3000';
-
 test.describe('тестирование конструктора бургеров', () => {
   
   test.beforeEach(async ({ page }) => {
@@ -11,9 +9,9 @@ test.describe('тестирование конструктора бургеро�
     });
 
     await page.addInitScript(() => { window.localStorage.setItem('refreshToken', 'test'); });
-    await page.context().addCookies([{ name: 'accessToken', value: 'test', url: BASE_URL }]);
+    await page.context().addCookies([{ name: 'accessToken', value: 'test', url: 'http://localhost:3000' }]);
 
-    await page.goto(BASE_URL);
+    await page.goto('/');
   });
 
   test('рабочий процесс: модалки, drag-and-drop и оформление заказа', async ({ page }) => {
