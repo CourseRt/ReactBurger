@@ -1,11 +1,11 @@
 import ingredientDetailsReducer, { 
   setIngredientDetails, 
-  clearIngredientDetails 
+  clearIngredientDetails,
+  initialState
 } from './ingredientDetailsSlice';
 import { TIngredient } from '../utils/types';
 
 describe('ingredientDetails reducer', () => {
-  const initialState = { ingredient: null };
 
   const mockIngredient: TIngredient = {
     _id: '1',

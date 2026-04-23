@@ -3,19 +3,12 @@ import profileOrdersReducer, {
   onOpen,
   onClose,
   onError,
-  onMessage
+  onMessage,
+  initialState
 } from './profileOrdersSlice';
 import { IOrder } from '../utils/types';
 
 describe('profileOrders reducer', () => {
-  const initialState = {
-    orders: [],
-    total: 0,
-    totalToday: 0,
-    isConnected: false,
-    error: null,
-  };
-
   const mockOrders: IOrder[] = [
     {
       _id: '1',

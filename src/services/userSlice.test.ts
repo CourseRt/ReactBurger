@@ -5,17 +5,11 @@ import userReducer, {
   getUser, 
   updateUser,
   setAuthChecked,
-  setUser
+  setUser,
+  initialState
 } from './userSlice';
 
 describe('user reducer', () => {
-  const initialState = {
-    user: null,
-    isAuthChecked: false,
-    isLoading: false,
-    error: null,
-  };
-
   const mockUser = { email: 'test@test.ru', name: 'Ivan' };
 
   it('should return the initial state', () => {

@@ -9,7 +9,7 @@ interface IProfileOrdersState {
   error: string | null;
 }
 
-const initialState: IProfileOrdersState = {
+export const initialState: IProfileOrdersState = {
   orders: [],
   total: 0,
   totalToday: 0,

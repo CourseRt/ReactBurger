@@ -1,9 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TIngredient } from '../utils/types';
 
+export const initialState: { ingredient: TIngredient | null } = {
+  ingredient: null,
+};
+
 const ingredientDetailsSlice = createSlice({
   name: 'ingredientDetails',
-  initialState: { ingredient: null as TIngredient | null },
+  initialState,
   reducers: {
     setIngredientDetails: (state, action: PayloadAction<TIngredient>) => {
       state.ingredient = action.payload;

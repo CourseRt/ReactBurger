@@ -1,12 +1,6 @@
-import orderReducer, { postOrder, clearOrder } from './orderSlice';
+import orderReducer, { postOrder, clearOrder, initialState } from './orderSlice';
 
 describe('order reducer', () => {
-  const initialState = {
-    orderNumber: null,
-    isLoading: false,
-    hasError: false,
-  };
-
   it('should return the initial state', () => {
     expect(orderReducer(undefined, { type: '' })).toEqual(initialState);
   });
